@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Madcars - Análise de Importação</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+        <h1 class="mb-4">Análise de Oportunidade - Madcars</h1>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Veículo Selecionado (Origem: {{ veiculo.origin_country }})</h5>
+            </div>
+            <div class="card-body">
+                <h3>{{ veiculo.make }} {{ veiculo.model }} {{ veiculo.version }} ({{ veiculo.year }})</h3>
+                <p><strong>Preço de Compra Base:</strong> {{ veiculo.purchase_price }} € | <strong>Km:</strong> {{ veiculo.mileage }} km | <strong>CO2:</strong> {{ veiculo.co2_emissions }} g/km</p>
+                {% if veiculo.source_url %}
+                    <a href="{{ veiculo.source_url }}" target="_blank" class="btn btn-outline-primary btn-sm">Ver Anúncio Original</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Calculadora de Custos em Espanha</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between">
+                                Subtotal Aquisição: <strong>{{ custos.subtotal_aquisicao }} €</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Subtotal Logístico (Transporte): <strong>{{ custos.subtotal_logistica }} €</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Imposto de Matriculação (IETM): <strong>{{ custos.imposto_matricula }} €</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                Custos Fiscais / ITV / Ficha: <strong>{{ custos.subtotal_fiscal }} €</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between bg-warning-subtle">
+                                <strong>Landed Cost (Posto em Espanha):</strong> <strong>{{ custos.landed_cost }} €</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between bg-success-subtle">
+                                <strong>Preço de Venda Proposto (com Margem):</strong> <strong>{{ custos.preco_venda_final }} €</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Comparação com o Mercado Espanhol</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="display-4 fw-bold text-{{ oportunidade.status_cor }} mb-2">
+                            {{ oportunidade.score }} / 100
+                        </div>
+                        <span class="badge bg-{{ oportunidade.status_cor }} fs-6 mb-3">{{ oportunidade.status }}</span>
+                        
+                        <div class="text-start mt-3">
+                            <p><strong>Veículos Comparáveis Encontrados:</strong> {{ oportunidade.total_comparaveis }}</p>
+                            <p><strong>Preço Médio em Espanha:</strong> {{ oportunidade.preco_medio }} €</p>
+                            <p><strong>Margem Estimada:</strong> {{ oportunidade.margem_eur }} € ({{ oportunidade.margem_pct }}%)</p>
+                            <p><strong>Poupança Potencial do Cliente:</strong> {{ oportunidade.poupanca_cliente }} €</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
