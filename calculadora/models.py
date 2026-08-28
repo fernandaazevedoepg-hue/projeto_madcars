@@ -16,7 +16,7 @@ class Vehicle(models.Model):
     fuel_type = models.CharField(max_length=30, verbose_name="Combustível")
     co2_emissions = models.IntegerField(default=150, verbose_name="Emissões CO2 (g/km)")
     market_type = models.CharField(max_length=10, choices=MARKET_CHOICES, default='ORIGIN')
-    source_url = models.URLField(blank=True, null=True, verbose_name="URL do Anúncio")
+    seller = models.CharField(max_length=100, blank=True, null=True, verbose_name="Fonte / Vendedor")
 
     def __str__(self):
         return f"{self.make} {self.model} ({self.year}) - {self.purchase_price}€"
