@@ -20,5 +20,5 @@ from calculadora.views import painel_calculadora
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', painel_calculadora, name='calculadora'),  # Página principal do projeto
+    path('', painel_calculadora, name='calculadora'),  
 ]

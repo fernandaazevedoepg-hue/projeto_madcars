@@ -5,15 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Madcars — Market Intelligence Dashboard</title>
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Ficheiro CSS Separado -->
     <link rel="stylesheet" href="{% static 'calculadora/styles.css' %}">
 </head>
 <body class="p-4">
     <div class="container my-3">
-        
-        <!-- HEADER PRINCIPAL -->
+   
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="main-header mb-1">MADCARS</h1>
@@ -31,10 +28,10 @@
                     </h5>
                 </div>
                 <form method="GET" action="" class="d-flex align-items-center">
-                    <select name="carro_id" class="form-select fw-bold" onchange="this.form.submit()">
+                    <select name="carro_id" class="form-select fw-bold bg-dark text-light border-secondary" onchange="this.form.submit()">
                         {% for c in todos_calculos %}
-                            <option value="{{ c.id }}" {% if c.id == calculo.id %}selected{% endif %}>
-                                {{ c.vehicle.make }} {{ c.vehicle.model }} {% if c.vehicle.version %}{{ c.vehicle.version }}{% endif %} ({{ c.vehicle.year }}) — {{ c.vehicle.purchase_price }} €
+                            <option value="{{ c.id }}" {% if c.id == veiculo.id %}selected{% endif %}>
+                                {{ c.make }} {{ c.model }} {% if c.version %}{{ c.version }}{% endif %} ({{ c.year }}) — {{ c.purchase_price }} {{ c.currency }}
                             </option>
                         {% endfor %}
                     </select>
@@ -43,39 +40,48 @@
         </div>
 
         <div class="row">
-            <!-- PAINEL ESQUERDO: CUSTOS DA IMPORTAÇÃO -->
+            <!-- PAINEL ESQUERDO: ESTRUTURA DE CUSTOS -->
             <div class="col-lg-6 mb-4">
                 <div class="card h-100">
                     <div class="card-header">
                         <span class="text-info me-2">●</span> Estrutura de Custos ({{ veiculo.origin_country }} ➔ Espanha)
                     </div>
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
-                        <div class="row g-3 mb-4">
-                            <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Preço Base Origem</span>
-                                    <h4 class="fw-bold mb-0 text-white">{{ veiculo.purchase_price }} €</h4>
+                        
+                        <!-- FORMULÁRIO DE RECALCULAR CUSTOS -->
+                        <form method="POST" action="" class="mb-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="update_costs" value="1">
+                            <input type="hidden" name="calculo_id" value="{{ calculo.id }}">
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">TAXA LEILÃO (€)</label>
+                                    <input type="number" step="0.01" name="auction_fee" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.auction_fee }}">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">HONORÁRIOS (€)</label>
+                                    <input type="number" step="0.01" name="buyer_fees" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.buyer_fees }}">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">TRANSPORTE (€)</label>
+                                    <input type="number" step="0.01" name="transport_cost" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.transport_cost }}">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">HOMOLOGAÇÃO (€)</label>
+                                    <input type="number" step="0.01" name="homologation_cost" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.homologation_cost }}">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">ITV (€)</label>
+                                    <input type="number" step="0.01" name="itv_cost" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.itv_cost }}">
+                                </div>
+                                <div class="col-4">
+                                    <label class="form-label text-light fw-bold small">MARGEM ALVO (€)</label>
+                                    <input type="number" step="0.01" name="target_margin" class="form-control form-control-sm bg-dark text-white border-secondary" value="{{ calculo.target_margin }}">
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Transporte & Logística</span>
-                                    <h4 class="fw-bold mb-0 text-white">{{ custos.subtotal_logistica }} €</h4>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Imposto Matriculação</span>
-                                    <h4 class="fw-bold mb-0 text-white">{{ custos.imposto_matricula }} €</h4>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Taxas Fiscais / ITV</span>
-                                    <h4 class="fw-bold mb-0 text-white">{{ custos.subtotal_fiscal }} €</h4>
-                                </div>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn btn-sm btn-outline-info w-100 mb-3 fw-bold">Recalcular Custos</button>
+                        </form>
 
                         <div class="p-3 rounded-3" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3);">
                             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -107,15 +113,23 @@
 
                         <div class="row g-2 text-start">
                             <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Preço Médio Espanha</span>
-                                    <h5 class="fw-bold mb-0">{{ oportunidade.preco_medio }} €</h5>
+                                <div class="kpi-box p-3 rounded bg-dark border border-secondary">
+                                    <span class="form-label text-secondary small d-block">PREÇO MÉDIO ESPANHA</span>
+                                    <h5 class="fw-bold mb-1 text-white">{{ oportunidade.preco_medio }} €</h5>
+                                    <span class="small d-block fw-semibold" style="color: #38bdf8 !important;">
+                                        Mediana: {{ oportunidade.preco_mediana }} €
+                                    </span>
                                 </div>
                             </div>
                             <div class="col-6">
-                                <div class="kpi-box">
-                                    <span class="form-label">Margem Comercial</span>
-                                    <h5 class="fw-bold text-success mb-0">{{ oportunidade.margem_eur }} € ({{ oportunidade.margem_pct }}%)</h5>
+                                <div class="kpi-box p-3 rounded bg-dark border border-secondary">
+                                    <span class="form-label text-secondary small d-block">MARGEM COMERCIAL</span>
+                                    <h5 class="fw-bold mb-1 {% if oportunidade.margem_eur < 0 %}text-danger{% else %}text-success{% endif %}">
+                                        {{ oportunidade.margem_eur }} € ({{ oportunidade.margem_pct }}%)
+                                    </h5>
+                                    <span class="small d-block fw-semibold" style="color: #cbd5e1 !important;">
+                                        Poupança Cliente: {{ oportunidade.poupanca_cliente }} €
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -132,11 +146,12 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table custom-table mb-0">
+                    <table class="table custom-table mb-0 align-middle">
                         <thead>
                             <tr>
                                 <th>Veículo</th>
                                 <th>Fonte / Anúncio</th>
+                                <th>Transmissão</th>
                                 <th>Ano</th>
                                 <th>Quilometragem</th>
                                 <th>Preço em Espanha</th>
@@ -145,13 +160,17 @@
                         <tbody>
                             {% for comp in oportunidade.lista_comparaveis %}
                             <tr>
-                                <td class="fw-bold text-dark">
+                                <td class="fw-bold text-dark" style="max-width: 220px; word-break: break-word;">
                                     {{ comp.make }} {{ comp.model }} {% if comp.version %}{{ comp.version }}{% endif %}
                                 </td>
                                 <td>
-                                    {% if comp.seller %}
+                                    {% if comp.source_url %}
+                                        <a href="{{ comp.source_url }}" target="_blank" class="btn btn-sm btn-outline-info text-nowrap">
+                                            Ver Anúncio 🔗
+                                        </a>
+                                    {% elif comp.seller %}
                                         {% if "http" in comp.seller %}
-                                            <a href="{{ comp.seller }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                            <a href="{{ comp.seller }}" target="_blank" class="btn btn-sm btn-outline-info text-nowrap">
                                                 Ver Anúncio 🔗
                                             </a>
                                         {% else %}
@@ -161,13 +180,14 @@
                                         <span class="text-muted small">Particular</span>
                                     {% endif %}
                                 </td>
+                                <td>{{ comp.transmission }}</td>
                                 <td>{{ comp.year }}</td>
                                 <td>{{ comp.mileage }} km</td>
                                 <td><span class="fw-bold text-primary">{{ comp.purchase_price }} €</span></td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted p-4">Sem comparáveis suficientes registados para este modelo.</td>
+                                <td colspan="6" class="text-center text-muted p-4">Sem comparáveis suficientes registados para este modelo.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -184,6 +204,7 @@
             <div class="card-body p-4">
                 <form method="POST" action="">
                     {% csrf_token %}
+                    <input type="hidden" name="create_vehicle" value="1">
                     <div class="row g-3">
                         <div class="col-md-2">
                             <label class="form-label">Tipo de Mercado</label>
@@ -202,34 +223,50 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Versão</label>
-                            <input type="text" name="version" class="form-control" placeholder="ex: S / GTS">
+                            <input type="text" name="version" class="form-control" placeholder="ex: Standard / GTS">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Transmissão</label>
+                            <select name="transmission" class="form-select">
+                                <option value="Automática">Automática</option>
+                                <option value="Manual">Manual</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Combustível</label>
+                            <select name="fuel_type" class="form-select">
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Diesel">Diesel</option>
+                                <option value="Híbrido">Híbrido</option>
+                                <option value="Elétrico">Elétrico</option>
+                            </select>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Ano</label>
-                            <input type="number" name="year" class="form-control" value=" ex: 2021" required>
+                            <input type="number" name="year" class="form-control" value="2021" required>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label">Quilometragem</label>
                             <input type="number" name="mileage" class="form-control" placeholder="ex: 85000" required>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">Preço (€)</label>
                             <input type="number" step="0.01" name="purchase_price" class="form-control" placeholder="ex: 52000" required>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label">País Origem</label>
-                            <input type="text" name="origin_country" class="form-control" value="ex: Alemanha">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">CO2 (g/km)</label>
-                            <input type="number" name="co2_emissions" class="form-control" value=" ex: 120">
+                            <input type="text" name="origin_country" class="form-control" value="Alemanha">
                         </div>
                         <div class="col-md-2">
-                            <label class="form-label">Fonte / Vendedor</label>
-                            <input type="text" name="seller" class="form-control" placeholder="ex: Mobile.de / Stand">
+                            <label class="form-label">CO2 (g/km)</label>
+                            <input type="number" name="co2_emissions" class="form-control" value="120">
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary-action w-100">+ Guardar Veículo</button>
+                        <div class="col-md-2">
+                            <label class="form-label">URL do Anúncio</label>
+                            <input type="url" name="source_url" class="form-control" placeholder="https://...">
+                        </div>
+                        <div class="col-md-12 text-end mt-3">
+                            <button type="submit" class="btn btn-primary-action px-5">+ Guardar Veículo</button>
                         </div>
                     </div>
                 </form>
