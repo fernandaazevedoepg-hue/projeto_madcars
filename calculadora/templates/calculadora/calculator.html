@@ -104,8 +104,10 @@
                         <span class="text-success me-2">●</span> Indicadores de Oportunidade
                     </div>
                     <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
-                        <div class="score-display text-{{ oportunidade.status_cor }} mb-2">
-                            {{ oportunidade.score }}<span class="fs-5 text-muted">/100</span>
+                        <!-- SCORE COM ALTO CONTRASTE -->
+                        <div class="score-display text-{{ oportunidade.status_cor }} mb-2 d-flex align-items-baseline justify-content-center gap-1">
+                            <span class="display-3 fw-bold">{{ oportunidade.score }}</span>
+                            <span class="fs-4 text-light opacity-75">/100</span>
                         </div>
                         <div>
                             <span class="badge bg-{{ oportunidade.status_cor }} px-3 py-2 fs-6 mb-4">{{ oportunidade.status }}</span>
